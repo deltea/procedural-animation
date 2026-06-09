@@ -4,21 +4,26 @@ import { Vector } from "./utils";
 
 const WIDTH = 640 / 4;
 const HEIGHT = 640 / 4;
-const POINT_COUNT = 6;
+const POINT_COUNT = 10;
 const POINT_DISTANCE = 16;
 const CIRCLE_RADIUS = 3;
+const GRAVITY = 1000;
 
 let points: Point[] = [];
 
 class Point {
   pos: Vector;
+  lastPos: Vector;
   distance: number;
   next: Point | null;
+  isRoot: boolean;
 
   constructor(distance: number, pos: Vector, next: Point | null) {
     this.distance = distance;
     this.next = next;
     this.pos = pos;
+    this.lastPos = new Vector(pos.x, pos.y);
+    this.isRoot = false;
   }
 }
 
@@ -37,6 +42,9 @@ const sketch = (p: p5) => {
       const nextPoint = points[i + 1];
       points[i].next = nextPoint;
     }
+
+    points[0].isRoot = true;
+    points[points.length - 1].isRoot = true;
   }
 
   p.draw = () => {
@@ -47,11 +55,28 @@ const sketch = (p: p5) => {
     p.stroke("#fff");
     p.fill(0);
 
+    // apply gravity to the points
+    for (const point of points) {
+      if (point.isRoot) continue;
+
+      const dt = p.deltaTime / 1000;
+      const accel = new Vector(0, GRAVITY * dt * dt);
+      // point.pos = point.pos.add(point.vel.mult(p.deltaTime));
+      let temp = point.pos;
+      point.pos = point.pos.mult(2).sub(point.lastPos).add(accel);
+      point.lastPos = temp;
+    }
+
     // update the point constraints
     for (const point of points) {
       if (point.next === null) continue;
-      const normal = point.next.pos.sub(point.pos).normalize();
-      point.next.pos = point.pos.add(normal.mult(POINT_DISTANCE));
+
+      const delta = point.next.pos.sub(point.pos);
+      const dist = delta.magnitude();
+      const correction = delta.mult((dist - point.distance) / dist / 2);
+
+      if (!point.next.isRoot) point.next.pos = point.next.pos.sub(correction);
+      if (!point.isRoot) point.pos = point.pos.add(correction);
     }
 
     // draw each point and connections
@@ -69,7 +94,9 @@ const sketch = (p: p5) => {
 
   p.mouseMoved = () => {
     const mousePos = new Vector(p.mouseX / 4 - WIDTH / 2, p.mouseY / 4 - HEIGHT / 2);
-    points[0].pos = mousePos;
+    for (const point of points.filter(p => p.isRoot)) {
+      point.pos = mousePos;
+    }
   }
 }
 
