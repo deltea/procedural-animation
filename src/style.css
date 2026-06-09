@@ -12,6 +12,7 @@ main {
 }
 
 canvas {
-  scale: 400% 400%;
+  scale: 600% 600%;
   image-rendering: pixelated;
+  cursor: none;
 }

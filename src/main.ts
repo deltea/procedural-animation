@@ -4,7 +4,7 @@ import { Vector } from "./utils";
 
 const WIDTH = 640 / 4;
 const HEIGHT = 640 / 4;
-const POINT_COUNT = 5;
+const POINT_COUNT = 6;
 const POINT_DISTANCE = 16;
 const CIRCLE_RADIUS = 3;
 
@@ -47,6 +47,13 @@ const sketch = (p: p5) => {
     p.stroke("#fff");
     p.fill(0);
 
+    // update the point constraints
+    for (const point of points) {
+      if (point.next === null) continue;
+      const normal = point.next.pos.sub(point.pos).normalize();
+      point.next.pos = point.pos.add(normal.mult(POINT_DISTANCE));
+    }
+
     // draw each point and connections
     for (const point of points) {
       // draw the connection lines first
@@ -58,6 +65,11 @@ const sketch = (p: p5) => {
 
       p.circle(point.pos.x, point.pos.y, CIRCLE_RADIUS);
     }
+  }
+
+  p.mouseMoved = () => {
+    const mousePos = new Vector(p.mouseX / 4 - WIDTH / 2, p.mouseY / 4 - HEIGHT / 2);
+    points[0].pos = mousePos;
   }
 }
 
