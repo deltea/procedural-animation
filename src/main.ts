@@ -2,10 +2,11 @@ import "./style.css";
 import p5 from "p5";
 import { Vector } from "./utils";
 
+const SCALE = 6;
 const WIDTH = 640 / 4;
 const HEIGHT = 640 / 4;
-const POINT_COUNT = 10;
-const POINT_DISTANCE = 16;
+const POINT_COUNT = 20;
+const POINT_DISTANCE = 3;
 const CIRCLE_RADIUS = 3;
 const GRAVITY = 1000;
 
@@ -30,10 +31,11 @@ class Point {
 const sketch = (p: p5) => {
   p.setup = () => {
     const canvas = p.createCanvas(WIDTH, HEIGHT, p.WEBGL);
+    document.documentElement.style.setProperty("--scale-factor", `${SCALE * 100}%`)
 
     // create each point
     for (let i = 0; i < POINT_COUNT; i++) {
-      const point = new Point(POINT_DISTANCE, new Vector(i * 16, 0), null);
+      const point = new Point(POINT_DISTANCE, new Vector(i * POINT_DISTANCE, 0), null);
       points.push(point);
     }
 
@@ -43,8 +45,8 @@ const sketch = (p: p5) => {
       points[i].next = nextPoint;
     }
 
+    points[points.length - 1].next = points[0];
     points[0].isRoot = true;
-    points[points.length - 1].isRoot = true;
   }
 
   p.draw = () => {
@@ -90,10 +92,9 @@ const sketch = (p: p5) => {
 
       p.circle(point.pos.x, point.pos.y, CIRCLE_RADIUS);
     }
-  }
 
-  p.mouseMoved = () => {
-    const mousePos = new Vector(p.mouseX / 4 - WIDTH / 2, p.mouseY / 4 - HEIGHT / 2);
+    // move the root point with the mouse
+    const mousePos = new Vector(p.mouseX / SCALE - WIDTH / 2, p.mouseY / SCALE - HEIGHT / 2);
     for (const point of points.filter(p => p.isRoot)) {
       point.pos = mousePos;
     }

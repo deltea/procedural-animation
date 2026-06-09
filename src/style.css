@@ -1,3 +1,7 @@
+:root {
+  --scale-factor: 100%;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -12,7 +16,7 @@ main {
 }
 
 canvas {
-  scale: 600% 600%;
+  scale: var(--scale-factor) var(--scale-factor);
   image-rendering: pixelated;
   cursor: none;
 }
