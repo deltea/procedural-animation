@@ -81,15 +81,6 @@ export class Snake {
     }
 
     // enforce angle constraints
-    // for (let i = 1; i < this.segments.length - 1; i++) {
-    //   const segBefore = this.segments[i - 1];
-    //   const seg = this.segments[i];
-    //   const segAfter = this.segments[i + 1];
-    //   if (Math.abs(segBefore.pos.sub(seg.pos).angle() - segAfter.pos.sub(seg.pos).angle()) < SEGMENT_MIN_ANGLE) {
-    //     segAfter.pos = segAfter.pos.rotate(SEGMENT_MIN_ANGLE - (segBefore.pos.sub(seg.pos).angle() - segAfter.pos.sub(seg.pos).angle()));
-    //   }
-    // }
-
     for (let i = 1; i < this.segments.length - 1; i++) {
       const segBefore = this.segments[i - 1];
       const seg = this.segments[i];
@@ -119,6 +110,9 @@ export class Snake {
   }
 
   draw(p: p5) {
+    p.strokeWeight(1);
+    p.stroke("#fff");
+
     const points: Vector[] = [];
 
     // add extra points for head
