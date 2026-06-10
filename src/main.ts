@@ -17,10 +17,11 @@ const sketch = (p: p5) => {
     document.documentElement.style.setProperty("--scale-factor", `${SCALE * 100}%`);
 
     const shape = new Wave([
-      [0, 12],
-      [1, 8]
+      [0, 4.5],
+      [0.1, 3],
+      [1, 0.5]
     ]);
-    snake = new Snake(8, shape, 150);
+    snake = new Snake(20, shape, 25);
   }
 
   p.draw = () => {
@@ -39,9 +40,10 @@ const sketch = (p: p5) => {
 
     // draw the cursor
     p.strokeWeight(1);
+    p.stroke("#fff");
     const angle = snake.getHead().pos.sub(mousePos).angle();
-    const left = mousePos.add(new Vector(0, 2).rotate(-angle - 45));
-    const right = mousePos.add(new Vector(0, -2).rotate(-angle + 45));
+    const left = mousePos.add(new Vector(0, 2).rotate(angle - 45));
+    const right = mousePos.add(new Vector(0, -2).rotate(angle + 45));
     p.line(mousePos.x, mousePos.y, left.x, left.y);
     p.line(mousePos.x, mousePos.y, right.x, right.y);
   }
