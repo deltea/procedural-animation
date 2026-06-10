@@ -17,8 +17,8 @@ const sketch = (p: p5) => {
     document.documentElement.style.setProperty("--scale-factor", `${SCALE * 100}%`);
 
     const shape = new Wave([
-      [0, 8],
-      [1, 12]
+      [0, 12],
+      [1, 8]
     ]);
     snake = new Snake(8, shape, 150);
   }

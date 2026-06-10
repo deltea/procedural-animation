@@ -5,6 +5,7 @@ import { Vector } from "./utils";
 import { Wave } from "./wave";
 
 const SEGMENT_DISTANCE = 8;
+const SEGMENT_MIN_ANGLE = 120;
 
 class Segment extends Point {
   radius: number;
@@ -48,7 +49,7 @@ export class Snake {
   }
 
   getHead() {
-    return this.segments[this.segments.length - 1];
+    return this.segments[0];
   }
 
   update(dt: number, mousePos: Vector) {
@@ -63,6 +64,16 @@ export class Snake {
       if (!segment.next.isRoot) segment.next.pos = segment.next.pos.sub(correction);
       if (!segment.isRoot) segment.pos = segment.pos.add(correction);
     }
+
+    // enforce angle constraints
+    // for (let i = 1; i < this.segments.length - 1; i++) {
+    //   const segBefore = this.segments[i - 1];
+    //   const seg = this.segments[i];
+    //   const segAfter = this.segments[i + 1];
+    //   if (Math.abs(segBefore.pos.sub(seg.pos).angle() - segAfter.pos.sub(seg.pos).angle()) < SEGMENT_MIN_ANGLE) {
+    //     segAfter.pos = segAfter.pos.rotate(SEGMENT_MIN_ANGLE - (segBefore.pos.sub(seg.pos).angle() - segAfter.pos.sub(seg.pos).angle()));
+    //   }
+    // }
 
     // make the head follow the mouse if not close enough already
     const diff = mousePos.sub(this.getHead().pos);
