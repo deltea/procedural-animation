@@ -43,7 +43,7 @@ const sketch = (p: p5) => {
 
     // draw the apples
     for (const apple of apples) {
-      apple.update(p);
+      apple.update(p, dt);
       apple.draw(p);
     }
 

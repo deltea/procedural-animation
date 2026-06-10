@@ -5,6 +5,7 @@ export class Point {
   lastPos: Vector;
   distance: number;
   next: Point | null;
+  prev: Point | null;
   isRoot: boolean;
 
   constructor(distance: number, pos: Vector, next: Point | null) {
@@ -13,5 +14,6 @@ export class Point {
     this.pos = pos;
     this.lastPos = new Vector(pos.x, pos.y);
     this.isRoot = false;
+    this.prev = null;
   }
 }
