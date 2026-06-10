@@ -40,14 +40,13 @@ export class Apple {
   }
 
   update(p: p5, dt: number) {
-    // apply gravity to the points
     for (const point of this.points) {
       if (point.isRoot) continue;
 
-      const accel = new Vector(0, 1 * dt);
-      let temp = point.pos;
-      point.pos = point.pos.mult(2).sub(point.lastPos).add(accel);
-      point.lastPos = temp;
+      point.verletIntegrate();
+
+      // apply gravity
+      point.pos = point.pos.add(new Vector(0, 1 * dt));
     }
 
     // update the point constraints
@@ -62,19 +61,35 @@ export class Apple {
       if (!point.isRoot) point.pos = point.pos.add(correction);
     }
 
-    // apply scaling to each point to keep its shape
-    const desiredArea = this.radius * this.radius * Math.PI;
-    const delta = (this.calculateArea() < desiredArea * 2) ? desiredArea - this.calculateArea() : 0;
-    const circumference = this.radius * 2 * Math.PI;
-    const factor = delta / circumference;
-    for (const point of this.points) {
-      if (!point.next || !point.prev) continue;
-      const diff = point.next.pos.sub(point.prev.pos);
-      const normal = new Vector(-diff.y, diff.x).normalize();
-      point.pos = point.pos.add(normal.mult(factor));
+    // apply scaling to each point to keep its shape, and do it 10 times to make it faster
+    for (let i = 0; i < 10; i++) {
+      const desiredArea = 1.5 * this.radius * this.radius * Math.PI;
+      const delta = desiredArea - this.calculateArea();
+      const factor = 10 * delta;
+      for (const point of this.points) {
+        if (!point.next || !point.prev) continue;
+        const diff = point.next.pos.sub(point.prev.pos);
+        const normal = new Vector(-diff.y, diff.x).normalize();
+        point.pos = point.pos.add(normal.mult(factor));
+      }
     }
 
     // collision detection
+    for (const point of this.points) {
+      if (point.pos.y >= 80) {
+        // velocity is implicitly the pos subtracteed by the last pos in verlet integration so yea
+        point.pos = new Vector(point.pos.x, 160 - point.pos.y);
+        const vel = point.pos.sub(point.lastPos);
+        point.lastPos = new Vector(point.pos.x, point.pos.y + vel.y);
+      }
+
+      if (point.pos.x >= 80) {
+        // velocity is implicitly the pos subtracteed by the last pos in verlet integration so yea
+        point.pos = new Vector(160 - point.pos.x, point.pos.y);
+        const vel = point.pos.sub(point.lastPos);
+        point.lastPos = new Vector(point.pos.x + vel.x, point.pos.y);
+      }
+    }
   }
 
   calculateArea() {

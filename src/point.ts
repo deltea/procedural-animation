@@ -7,6 +7,7 @@ export class Point {
   next: Point | null;
   prev: Point | null;
   isRoot: boolean;
+  displacement: Vector;
 
   constructor(distance: number, pos: Vector, next: Point | null) {
     this.distance = distance;
@@ -15,5 +16,20 @@ export class Point {
     this.lastPos = new Vector(pos.x, pos.y);
     this.isRoot = false;
     this.prev = null;
+    this.displacement = new Vector(0, 0);
+  }
+
+  verletIntegrate() {
+    // apply verlet integration
+    const temp = this.pos;
+    // dampen the velocity a bit
+    const vel = this.pos.sub(this.lastPos).mult(0.99);
+    this.pos = this.pos.add(vel);
+    this.lastPos = temp;
+  }
+
+  applyDisplacement() {
+    this.pos.add(this.displacement);
+    this.displacement = new Vector(0, 0);
   }
 }
