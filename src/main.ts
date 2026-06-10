@@ -35,6 +35,8 @@ const sketch = (p: p5) => {
     p.stroke("#fff");
     p.fill(0, 0);
 
+    p.strokeWeight(1);
+
     snake.update(dt, mousePos);
     snake.draw(p);
 
