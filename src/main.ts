@@ -63,7 +63,6 @@ const sketch = (p: p5) => {
 
       const dt = p.deltaTime / 1000;
       const accel = new Vector(0, GRAVITY * dt * dt);
-      // point.pos = point.pos.add(point.vel.mult(p.deltaTime));
       let temp = point.pos;
       point.pos = point.pos.mult(2).sub(point.lastPos).add(accel);
       point.lastPos = temp;
