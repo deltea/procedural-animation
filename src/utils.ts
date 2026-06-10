@@ -38,3 +38,7 @@ export class Vector {
     return new Vector(this.x / m, this.y / m);
   }
 }
+
+export const clamp = (n: number, min: number, max: number) => Math.min(Math.max(n, min), max);
+
+export const lerp = (a: number, b: number, t: number) => a * (1 - t) + b * t;
