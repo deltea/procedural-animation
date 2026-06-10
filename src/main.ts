@@ -20,7 +20,7 @@ const sketch = (p: p5) => {
       [0, 8],
       [1, 12]
     ]);
-    snake = new Snake(8, shape, 100);
+    snake = new Snake(8, shape, 150);
   }
 
   p.draw = () => {
@@ -38,7 +38,12 @@ const sketch = (p: p5) => {
     snake.draw(p);
 
     // draw the cursor
-    p.strokeWeight(4);
+    p.strokeWeight(1);
+    const angle = snake.getHead().pos.sub(mousePos).angle();
+    const left = mousePos.add(new Vector(0, 2).rotate(-angle - 45));
+    const right = mousePos.add(new Vector(0, -2).rotate(-angle + 45));
+    p.line(mousePos.x, mousePos.y, left.x, left.y);
+    p.line(mousePos.x, mousePos.y, right.x, right.y);
   }
 }
 

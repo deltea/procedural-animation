@@ -37,8 +37,25 @@ export class Vector {
     }
     return new Vector(this.x / m, this.y / m);
   }
+
+  // rotate the vector by an angle in degrees
+  rotate(angle: number) {
+    const rad = degToRad(angle);
+    const x = this.x * Math.cos(rad) - this.y * Math.sin(rad);
+    const y = this.x * Math.sin(rad) - this.y * Math.cos(rad);
+    return new Vector(x, y);
+  }
+
+  // get the vector as an angle in degrees
+  angle() {
+    return radToDeg(Math.atan2(this.y, this.x));
+  }
 }
 
 export const clamp = (n: number, min: number, max: number) => Math.min(Math.max(n, min), max);
 
 export const lerp = (a: number, b: number, t: number) => a * (1 - t) + b * t;
+
+export const degToRad = (angle: number) => angle * Math.PI / 180;
+
+export const radToDeg = (angle: number) => angle / (Math.PI / 180);

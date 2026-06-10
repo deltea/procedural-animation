@@ -64,8 +64,9 @@ export class Snake {
       if (!segment.isRoot) segment.pos = segment.pos.add(correction);
     }
 
-    // make the head follow the mouse
-    const dir = mousePos.sub(this.getHead().pos).normalize();
+    // make the head follow the mouse if not close enough already
+    const diff = mousePos.sub(this.getHead().pos);
+    const dir = diff.normalize();
     this.getHead().pos = this.getHead().pos.add(dir.mult(this.speed * dt));
   }
 
