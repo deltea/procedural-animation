@@ -32,7 +32,7 @@ const sketch = (p: p5) => {
     snake = new Snake(400, shape, 25);
 
     // create a few apples
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 25; i++) {
       const size = rand(2, 8);
       const pos = new Vector(rand(-WIDTH / 2, WIDTH / 2), rand(-HEIGHT / 2, HEIGHT / 2));
       apples.push(new Apple(pos, size, (10 - size) / 20, Math.floor(size * 2 + 5)));
