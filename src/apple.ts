@@ -16,11 +16,11 @@ export class Apple {
   circumference: number;
   desiredArea: number;
 
-  constructor(radius: number, speed: number, numPoints: number) {
+  constructor(pos: Vector, radius: number, speed: number, numPoints: number) {
     this.radius = radius;
     this.speed = speed;
     this.numPoints = numPoints;
-    this.points = this.generatePoints();
+    this.points = this.generatePoints(pos);
     this.circumference = this.radius * 2 * Math.PI;
     this.chordLength = this.circumference / this.numPoints;
     this.desiredArea = FIRMNESS * this.radius * this.radius * Math.PI;
@@ -31,13 +31,13 @@ export class Apple {
     }
   }
 
-  generatePoints() {
+  generatePoints(center: Vector) {
     const arr: Point[] = [];
 
     // generate points based on shape and length of snake
     for (let i = 0; i < this.numPoints; i++) {
       // generate a point based on the shape
-      const p = new Point(POINTS_DISTANCE, new Vector(this.radius, 0).rotate(i * 360 / this.numPoints), null);
+      const p = new Point(POINTS_DISTANCE, new Vector(this.radius, 0).rotate(i * 360 / this.numPoints).add(center), null);
       arr.push(p);
     }
 
@@ -54,10 +54,17 @@ export class Apple {
     return arr;
   }
 
-  update(p: p5, dt: number, snakeSegments: Segment[]) {
+  update(p: p5, dt: number, snakeSegments: Segment[], apples: Apple[]) {
     for (const point of this.points) {
       if (point.isRoot) continue;
       point.verletIntegrate();
+    }
+
+    // normalize speed so each apple moves at a constant speed
+    for (const point of this.points) {
+      const vel = point.pos.sub(point.lastPos);
+      const normal = vel.normalize().mult(this.speed);
+      point.lastPos = point.pos.sub(normal);
     }
 
     // repeat scaling a bunch of times per frame to make it adjust faster
@@ -93,11 +100,6 @@ export class Apple {
       for (const point of this.points) {
         point.applyDisplacement();
       }
-      for (const point of this.points) {
-        const vel = point.pos.sub(point.lastPos);
-        const normal = vel.normalize().mult(this.speed);
-        point.lastPos = point.pos.sub(normal);
-      }
 
       // collision detection and bounccyyy
       for (const point of this.points) {
@@ -105,18 +107,18 @@ export class Apple {
 
         if (point.pos.x >= 80) {
           point.pos.x = 160 - point.pos.x;
-          point.lastPos.x = point.pos.x - vel.x;
+          point.lastPos.x = point.pos.x + vel.x;
         } else if (point.pos.x <= -80) {
           point.pos.x = -160 - point.pos.x;
-          point.lastPos.x = point.pos.x - vel.x;
+          point.lastPos.x = point.pos.x + vel.x;
         }
 
         if (point.pos.y >= 80) {
           point.pos.y = 160 - point.pos.y;
-          point.lastPos.y = point.pos.y - vel.y;
+          point.lastPos.y = point.pos.y + vel.y;
         } else if (point.pos.y <= -80) {
           point.pos.y = -160 - point.pos.y;
-          point.lastPos.y = point.pos.y - vel.y;
+          point.lastPos.y = point.pos.y + vel.y;
         }
 
         for (const segment of snakeSegments) {
@@ -124,7 +126,7 @@ export class Apple {
             // push the point out of the segment first
             const dir = point.pos.sub(segment.pos).normalize();
             // push point out a little bit too much to make sure its out
-            point.pos = segment.pos.add(dir.mult(segment.radius + 0.1));
+            point.pos = segment.pos.add(dir.mult(segment.radius + 0.2));
 
             // then apply velocity
             const vel = point.pos.sub(point.lastPos);
@@ -135,7 +137,6 @@ export class Apple {
         }
       }
     }
-
   }
 
   calculateArea() {

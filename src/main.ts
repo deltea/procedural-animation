@@ -31,7 +31,8 @@ const sketch = (p: p5) => {
     // create a few apples
     for (let i = 0; i < 10; i++) {
       const size = rand(2, 8);
-      apples.push(new Apple(size, (10 - size) / 10, Math.floor(size * 2 + 3)));
+      const pos = new Vector(rand(-WIDTH / 2, WIDTH / 2), rand(-HEIGHT / 2, HEIGHT / 2));
+      apples.push(new Apple(pos, size, (10 - size) / 10, Math.floor(size * 2 + 5)));
     }
   }
 
@@ -51,7 +52,7 @@ const sketch = (p: p5) => {
     // update and draw the apples
     for (const apple of apples) {
       if (!ended) {
-        apple.update(p, dt, snake.segments);
+        apple.update(p, dt, snake.segments, apples);
       }
       apple.draw(p, color);
     }
