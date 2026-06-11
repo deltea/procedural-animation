@@ -4,13 +4,15 @@ import { Point } from "./point";
 import { radToDeg, Vector } from "./utils";
 import { Wave } from "./wave";
 
-const SEGMENT_DISTANCE = 3;
-const SEGMENT_MIN_ANGLE = 130;
+const SEGMENT_DISTANCE = 0.5;
+const SEGMENT_MIN_ANGLE = 120;
+const FOLLOW_MIN_DIST = 10;
 
 // how often the tongue flicks in seconds
 const TONGUE_DELAY = 5;
 // how long the tongue stays out;
 const TONGUE_TIME = 0.35;
+const TONGUE_SIZE = 4;
 
 export class Segment extends Point {
   radius: number;
@@ -108,8 +110,11 @@ export class Snake {
 
     // make the head follow the mouse if not close enough already
     const diff = mousePos.sub(this.getHead().pos);
-    const dir = diff.normalize();
-    this.getHead().pos = this.getHead().pos.add(dir.mult(this.speed * dt));
+    const dist = diff.magnitude();
+    if (dist > FOLLOW_MIN_DIST) {
+      const dir = diff.normalize();
+      this.getHead().pos = this.getHead().pos.add(dir.mult(this.speed * dt));
+    }
   }
 
   draw(p: p5) {
@@ -155,8 +160,8 @@ export class Snake {
 
     // draw the eyes and tongue
     if (head.next) {
-      const eyeLeft = head.pos.add(head.getDir().rotate(-45).mult(2));
-      const eyeRight = head.pos.add(head.getDir().rotate(45).mult(2));
+      const eyeLeft = head.pos.add(head.getDir().rotate(-75).mult(2));
+      const eyeRight = head.pos.add(head.getDir().rotate(75).mult(2));
       p.circle(eyeLeft.x, eyeLeft.y, 0.5);
       p.circle(eyeRight.x, eyeRight.y, 0.5);
 
@@ -167,12 +172,12 @@ export class Snake {
           const alt = Math.floor(p.millis() / 100) % 2 === 0 ? 1 : -1;
           console.log(p.millis(), alt);
           p.beginShape();
-          vertex(head.pos.add(head.getDir().rotate(3 * alt).mult(head.radius)));
-          vertex(head.pos.add(head.getDir().rotate(-3 * alt).mult(head.radius + 1.5)));
-          vertex(head.pos.add(head.getDir().rotate(3 * alt).mult(head.radius + 3)));
-          vertex(head.pos.add(head.getDir().rotate(-3 * alt).mult(head.radius + 4.5)));
-          vertex(head.pos.add(head.getDir().rotate(3 * alt).mult(head.radius + 3)));
-          vertex(head.pos.add(head.getDir().rotate(3 * alt).mult(head.radius + 4.5)));
+          vertex(head.pos.add(head.getDir().rotate(TONGUE_SIZE * alt).mult(head.radius)));
+          vertex(head.pos.add(head.getDir().rotate(-TONGUE_SIZE * alt).mult(head.radius + 1.5)));
+          vertex(head.pos.add(head.getDir().rotate(TONGUE_SIZE * alt).mult(head.radius + 3)));
+          vertex(head.pos.add(head.getDir().rotate(-TONGUE_SIZE * alt).mult(head.radius + 4.5)));
+          vertex(head.pos.add(head.getDir().rotate(TONGUE_SIZE * alt).mult(head.radius + 3)));
+          vertex(head.pos.add(head.getDir().rotate(TONGUE_SIZE * alt).mult(head.radius + 4.5)));
           p.endShape();
         }
       }

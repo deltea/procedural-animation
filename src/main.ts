@@ -27,7 +27,7 @@ const sketch = (p: p5) => {
       [0.1, 3],
       [1, 0.5]
     ]);
-    snake = new Snake(20, shape, 25);
+    snake = new Snake(120, shape, 25);
 
     // create a few apples
     for (let i = 0; i < 10; i++) {
