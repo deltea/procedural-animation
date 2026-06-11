@@ -2,25 +2,26 @@ import { Point } from "./point";
 import p5 from "p5";
 import { Vector } from "./utils";
 
-const POINTS_NUM = 9;
 const POINTS_DISTANCE = 5;
-const FIRMNESS = 3;
+const FIRMNESS = 1.5;
 
 export class Apple {
   radius: number;
   points: Point[];
   speed: number;
+  numPoints: number;
 
   chordLength: number;
   circumference: number;
   desiredArea: number;
 
-  constructor(radius: number, speed: number) {
+  constructor(radius: number, speed: number, numPoints: number) {
     this.radius = radius;
     this.speed = speed;
+    this.numPoints = numPoints;
     this.points = this.generatePoints();
     this.circumference = this.radius * 2 * Math.PI;
-    this.chordLength = this.circumference / POINTS_NUM;
+    this.chordLength = this.circumference / this.numPoints;
     this.desiredArea = FIRMNESS * this.radius * this.radius * Math.PI;
 
     const dir = new Vector(1, 0).rotate(Math.random() * 360).mult(this.speed);
@@ -33,14 +34,14 @@ export class Apple {
     const arr: Point[] = [];
 
     // generate points based on shape and length of snake
-    for (let i = 0; i < POINTS_NUM; i++) {
+    for (let i = 0; i < this.numPoints; i++) {
       // generate a point based on the shape
-      const p = new Point(POINTS_DISTANCE, new Vector(this.radius, 0).rotate(i * 360 / POINTS_NUM), null);
+      const p = new Point(POINTS_DISTANCE, new Vector(this.radius, 0).rotate(i * 360 / this.numPoints), null);
       arr.push(p);
     }
 
     // set point connections
-    for (let i = 1; i < POINTS_NUM - 1; i++) {
+    for (let i = 1; i < this.numPoints - 1; i++) {
       arr[i].next = arr[i + 1];
       arr[i].prev = arr[i - 1];
     }
@@ -168,9 +169,9 @@ export class Apple {
     return a;
   }
 
-  draw(p: p5) {
+  draw(p: p5, color: string) {
     p.strokeWeight(1);
-    p.stroke("#f00");
+    p.stroke(color);  
 
     p.beginShape();
     for (const point of this.points) {

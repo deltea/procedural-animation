@@ -3,7 +3,7 @@ import p5 from "p5";
 
 import { Snake } from "./snake";
 import { Wave } from "./wave";
-import { Vector } from "./utils";
+import { rand, Vector } from "./utils";
 import { Apple } from "./apple";
 
 const SCALE = 6;
@@ -12,6 +12,8 @@ const HEIGHT = 640 / 4;
 
 let snake: Snake;
 let apples: Apple[] = [];
+let color = "#f00";
+let ended = false;
 
 const sketch = (p: p5) => {
   p.setup = () => {
@@ -27,7 +29,10 @@ const sketch = (p: p5) => {
     snake = new Snake(20, shape, 25);
 
     // create a few apples
-    apples.push(new Apple(5, 0.5));
+    for (let i = 0; i < 10; i++) {
+      const size = rand(2, 8);
+      apples.push(new Apple(size, (10 - size) / 10, Math.floor(size * 2 + 3)));
+    }
   }
 
   p.draw = () => {
@@ -38,13 +43,17 @@ const sketch = (p: p5) => {
     const dt = p.deltaTime / 1000;
     const mousePos = new Vector(p.mouseX / SCALE - WIDTH / 2, p.mouseY / SCALE - HEIGHT / 2);
 
-    snake.update(dt, mousePos);
+    if (!ended) {
+      snake.update(dt, mousePos);
+    }
     snake.draw(p);
 
     // draw the apples
     for (const apple of apples) {
-      apple.update(p, dt);
-      apple.draw(p);
+      if (!ended) {
+        apple.update(p, dt);
+      }
+      apple.draw(p, color);
     }
 
     // draw the cursor

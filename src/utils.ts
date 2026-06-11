@@ -73,3 +73,5 @@ export const lerp = (a: number, b: number, t: number) => a * (1 - t) + b * t;
 export const degToRad = (angle: number) => angle * Math.PI / 180;
 
 export const radToDeg = (angle: number) => angle / (Math.PI / 180);
+
+export const rand = (min: number, max: number) => Math.random() * (max - min) + min;
