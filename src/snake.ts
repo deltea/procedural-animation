@@ -69,13 +69,6 @@ export class Snake {
     for (const segment of this.segments) {
       if (segment.next === null) continue;
 
-      // const delta = segment.next.pos.sub(segment.pos);
-      // const dist = delta.magnitude();
-      // const correction = delta.mult((dist - segment.distance) / dist / 2);
-
-      // if (!segment.next.isRoot) segment.next.pos = segment.next.pos.sub(correction);
-      // if (!segment.isRoot) segment.pos = segment.pos.add(correction);
-
       const normal = segment.next.pos.sub(segment.pos).normalize();
       segment.next.pos = segment.pos.add(normal.mult(segment.distance));
     }
@@ -158,7 +151,7 @@ export class Snake {
       p.circle(eyeRight.x, eyeRight.y, 0.5);
     }
 
-    p.stroke("#f00");
+    p.stroke("#00f");
 
     // for (const point of points) {
     //   p.circle(point.x, point.y, 1)

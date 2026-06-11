@@ -56,11 +56,7 @@ export class Apple {
   update(p: p5, dt: number) {
     for (const point of this.points) {
       if (point.isRoot) continue;
-
       point.verletIntegrate();
-
-      // apply gravity
-      // point.pos = point.pos.add(new Vector(0, 1 * dt));
     }
 
     // repeat scaling a bunch of times per frame to make it adjust faster
@@ -96,34 +92,6 @@ export class Apple {
       for (const point of this.points) {
         point.applyDisplacement();
       }
-
-      // collision detection
-      // velocity is implicitly the pos subtracteed by the last pos in verlet integration so yea
-      // for (const point of this.points) {
-      //   if (point.pos.y >= 80) {
-      //     const vel = point.pos.sub(point.lastPos);
-      //     point.pos = new Vector(point.pos.x, 160 - point.pos.y);
-      //     point.lastPos = new Vector(point.pos.x, point.pos.y + vel.y);
-      //   }
-
-      //   if (point.pos.y <= -80) {
-      //     const vel = point.pos.sub(point.lastPos);
-      //     point.pos = new Vector(point.pos.x, -160 - point.pos.y);
-      //     point.lastPos = new Vector(point.pos.x, point.pos.y + vel.y);
-      //   }
-
-      //   if (point.pos.x >= 80) {
-      //     const vel = point.pos.sub(point.lastPos);
-      //     point.pos = new Vector(160 - point.pos.x, point.pos.y);
-      //     point.lastPos = new Vector(point.pos.x + vel.x, point.pos.y);
-      //   }
-
-      //   if (point.pos.x <= -80) {
-      //     const vel = point.pos.sub(point.lastPos);
-      //     point.pos = new Vector(-160 - point.pos.x, point.pos.y);
-      //     point.lastPos = new Vector(point.pos.x + vel.x, point.pos.y);
-      //   }
-      // }
     }
 
     for (const point of this.points) {
@@ -152,6 +120,10 @@ export class Apple {
         point.pos.y = -160 - point.pos.y;
         point.lastPos.y = point.pos.y - vel.y * restitution;
       }
+
+      if (point.pos) {
+
+      }
     }
   }
 
@@ -171,7 +143,7 @@ export class Apple {
 
   draw(p: p5, color: string) {
     p.strokeWeight(1);
-    p.stroke(color);  
+    p.stroke(color);
 
     p.beginShape();
     for (const point of this.points) {
