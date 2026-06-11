@@ -25,7 +25,7 @@ export class Point {
     // apply verlet integration
     const temp = this.pos;
     // dampen the velocity a bit
-    const vel = this.pos.sub(this.lastPos).mult(0.99);
+    const vel = this.pos.sub(this.lastPos);
     this.pos = this.pos.add(vel);
     this.lastPos = temp;
   }
