@@ -8,6 +8,7 @@ export class Point {
   prev: Point | null;
   isRoot: boolean;
   displacement: Vector;
+  displacementWeight: number;
 
   constructor(distance: number, pos: Vector, next: Point | null) {
     this.distance = distance;
@@ -17,6 +18,7 @@ export class Point {
     this.isRoot = false;
     this.prev = null;
     this.displacement = new Vector(0, 0);
+    this.displacementWeight = 0;
   }
 
   verletIntegrate() {
@@ -28,8 +30,16 @@ export class Point {
     this.lastPos = temp;
   }
 
+  addDisplacement(offset: Vector) {
+    this.displacement = this.displacement.add(offset);
+    this.displacementWeight += 1;
+  }
+
   applyDisplacement() {
-    this.pos.add(this.displacement);
+    if (this.displacementWeight <= 0) return;
+    this.displacement = this.displacement.div(this.displacementWeight);
+    this.pos = this.pos.add(this.displacement);
     this.displacement = new Vector(0, 0);
+    this.displacementWeight = 0;
   }
 }

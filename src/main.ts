@@ -27,7 +27,7 @@ const sketch = (p: p5) => {
     snake = new Snake(20, shape, 25);
 
     // create a few apples
-    apples.push(new Apple(5));
+    apples.push(new Apple(15));
   }
 
   p.draw = () => {

@@ -26,6 +26,16 @@ export class Vector {
     }
   }
 
+  div(v: Vector): Vector;
+  div(n: number): Vector;
+  div(arg: Vector | number) {
+    if (arg instanceof Vector) {
+      return new Vector(this.x / arg.x, this.y / arg.y);
+    } else if (typeof arg === "number") {
+      return new Vector(this.x / arg, this.y / arg);
+    }
+  }
+
   magnitude() {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   }

@@ -8,12 +8,17 @@ const POINTS_DISTANCE = 5;
 export class Apple {
   radius: number;
   points: Point[];
-  vel: Vector;
+
+  chordLength: number;
+  circumference: number;
+  desiredArea: number;
 
   constructor(radius: number) {
     this.radius = radius;
     this.points = this.generatePoints();
-    this.vel = new Vector(1, 1);
+    this.circumference = this.radius * 2 * Math.PI;
+    this.chordLength = this.circumference / POINTS_NUM;
+    this.desiredArea = 1 * this.radius * this.radius * Math.PI;
   }
 
   generatePoints() {
@@ -22,7 +27,7 @@ export class Apple {
     // generate points based on shape and length of snake
     for (let i = 0; i < POINTS_NUM; i++) {
       // generate a point based on the shape
-      const p = new Point(POINTS_DISTANCE, new Vector(8, 0).rotate(i * 360 / POINTS_NUM), null);
+      const p = new Point(POINTS_DISTANCE, new Vector(this.radius, 0).rotate(i * 360 / POINTS_NUM), null);
       arr.push(p);
     }
 
@@ -50,44 +55,112 @@ export class Apple {
     }
 
     // update the point constraints
-    for (const point of this.points) {
-      if (point.next === null) continue;
+    // for (const point of this.points) {
+    //   if (point.next === null) continue;
 
-      const delta = point.next.pos.sub(point.pos);
-      const dist = delta.magnitude();
-      const correction = delta.mult((dist - point.distance) / dist / 2);
+    //   const delta = point.next.pos.sub(point.pos);
+    //   const dist = delta.magnitude();
+    //   const correction = delta.mult((dist - point.distance) / dist / 2);
 
-      if (!point.next.isRoot) point.next.pos = point.next.pos.sub(correction);
-      if (!point.isRoot) point.pos = point.pos.add(correction);
-    }
+    //   if (!point.next.isRoot) point.next.pos = point.next.pos.sub(correction);
+    //   if (!point.isRoot) point.pos = point.pos.add(correction);
+    // }
 
-    // apply scaling to each point to keep its shape, and do it 10 times to make it faster
+    // repeat scaling a bunch of times per frame to make it adjust faster
     for (let i = 0; i < 10; i++) {
-      const desiredArea = 1.5 * this.radius * this.radius * Math.PI;
-      const delta = desiredArea - this.calculateArea();
-      const factor = 10 * delta;
+      // keep the points together
+      for (const point of this.points) {
+        if (!point.next) continue;
+        const diff = point.next.pos.sub(point.pos);
+        // if points are too far apart
+        if (diff.magnitude() > this.chordLength) {
+          const error = (diff.magnitude() - this.chordLength) / 2;
+          const offset = diff.normalize().mult(error);
+          const negOffset = diff.invert();
+          point.addDisplacement(offset);
+          point.next.addDisplacement(negOffset);
+        }
+      }
+
+      const delta = this.desiredArea - this.calculateArea();
+      const offset = delta / this.circumference;
+
+      // push the points away to keep the shape
       for (const point of this.points) {
         if (!point.next || !point.prev) continue;
+        // the secant line
         const diff = point.next.pos.sub(point.prev.pos);
-        const normal = new Vector(-diff.y, diff.x).normalize();
-        point.pos = point.pos.add(normal.mult(factor));
-      }
-    }
-
-    // collision detection
-    for (const point of this.points) {
-      if (point.pos.y >= 80) {
-        // velocity is implicitly the pos subtracteed by the last pos in verlet integration so yea
-        point.pos = new Vector(point.pos.x, 160 - point.pos.y);
-        const vel = point.pos.sub(point.lastPos);
-        point.lastPos = new Vector(point.pos.x, point.pos.y + vel.y);
+        // const normal = new Vector(-diff.y, diff.x).normalize().mult(offset);
+        const normal = diff.rotate(-90).normalize().mult(offset);
+        point.addDisplacement(normal);
       }
 
-      if (point.pos.x >= 80) {
-        // velocity is implicitly the pos subtracteed by the last pos in verlet integration so yea
-        point.pos = new Vector(160 - point.pos.x, point.pos.y);
-        const vel = point.pos.sub(point.lastPos);
-        point.lastPos = new Vector(point.pos.x + vel.x, point.pos.y);
+      // apply all the displacements only at the end or else its all messed up
+      for (const point of this.points) {
+        point.applyDisplacement();
+      }
+
+      // for (const point of this.points) {
+      //   if (!point.next || !point.prev) continue;
+      //   const diff = point.next.pos.sub(point.prev.pos);
+      //   const normal = new Vector(-diff.y, diff.x).normalize();
+      //   point.pos = point.pos.add(normal.mult(factor));
+      // }
+
+      // collision detection
+      // for (const point of this.points) {
+      //   if (point.pos.y >= 80) {
+      //     // velocity is implicitly the pos subtracteed by the last pos in verlet integration so yea
+      //     point.pos = new Vector(point.pos.x, 160 - point.pos.y);
+      //     const vel = point.pos.sub(point.lastPos);
+      //     point.lastPos = new Vector(point.pos.x, point.pos.y + vel.y);
+      //   }
+
+      //   if (point.pos.y <= -80) {
+      //     // velocity is implicitly the pos subtracteed by the last pos in verlet integration so yea
+      //     point.pos = new Vector(point.pos.x, 160 + point.pos.y);
+      //     const vel = point.pos.sub(point.lastPos);
+      //     point.lastPos = new Vector(point.pos.x, point.pos.y - vel.y);
+      //   }
+
+      //   if (point.pos.x >= 80) {
+      //     // velocity is implicitly the pos subtracteed by the last pos in verlet integration so yea
+      //     point.pos = new Vector(160 - point.pos.x, point.pos.y);
+      //     const vel = point.pos.sub(point.lastPos);
+      //     point.lastPos = new Vector(point.pos.x + vel.x, point.pos.y);
+      //   }
+
+      //   if (point.pos.x <= -80) {
+      //     // velocity is implicitly the pos subtracteed by the last pos in verlet integration so yea
+      //     point.pos = new Vector(160 + point.pos.x, point.pos.y);
+      //     const vel = point.pos.sub(point.lastPos);
+      //     point.lastPos = new Vector(point.pos.x - vel.x, point.pos.y);
+      //   }
+      // }
+      for (const point of this.points) {
+        if (point.pos.y >= 80) {
+          const vel = point.pos.sub(point.lastPos);
+          point.pos = new Vector(point.pos.x, 160 - point.pos.y);
+          point.lastPos = new Vector(point.pos.x, point.pos.y + vel.y);
+        }
+
+        if (point.pos.y <= -80) {
+          const vel = point.pos.sub(point.lastPos);
+          point.pos = new Vector(point.pos.x, -160 - point.pos.y);
+          point.lastPos = new Vector(point.pos.x, point.pos.y + vel.y);
+        }
+
+        if (point.pos.x >= 80) {
+          const vel = point.pos.sub(point.lastPos);
+          point.pos = new Vector(160 - point.pos.x, point.pos.y);
+          point.lastPos = new Vector(point.pos.x + vel.x, point.pos.y);
+        }
+
+        if (point.pos.x <= -80) {
+          const vel = point.pos.sub(point.lastPos);
+          point.pos = new Vector(-160 - point.pos.x, point.pos.y);
+          point.lastPos = new Vector(point.pos.x + vel.x, point.pos.y);
+        }
       }
     }
   }
@@ -99,9 +172,9 @@ export class Apple {
       const point = this.points[i];
       const next = this.points[i].next;
       if (!next) continue;
-      const w = next.pos.x - point.pos.x;
+      const w = point.pos.x - next.pos.x;
       const l = (point.pos.y + next.pos.y) / 2;
-      a += Math.abs(w * l);
+      a += w * l;
     }
     return a;
   }
