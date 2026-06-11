@@ -7,6 +7,11 @@ import { Wave } from "./wave";
 const SEGMENT_DISTANCE = 3;
 const SEGMENT_MIN_ANGLE = 130;
 
+// how often the tongue flicks in seconds
+const TONGUE_DELAY = 5;
+// how long the tongue stays out;
+const TONGUE_TIME = 0.35;
+
 export class Segment extends Point {
   radius: number;
 
@@ -148,12 +153,29 @@ export class Snake {
 
     p.endShape("close");
 
-    // draw the eyes
+    // draw the eyes and tongue
     if (head.next) {
       const eyeLeft = head.pos.add(head.getDir().rotate(-45).mult(2));
       const eyeRight = head.pos.add(head.getDir().rotate(45).mult(2));
       p.circle(eyeLeft.x, eyeLeft.y, 0.5);
       p.circle(eyeRight.x, eyeRight.y, 0.5);
+
+      if (Math.floor(p.millis() / 1000) % TONGUE_DELAY === 0) {
+        if ((p.millis() / 1000) % 1 <= TONGUE_TIME) {
+          // tiny helper method
+          const vertex = (v: Vector) => p.vertex(v.x, v.y);
+          const alt = Math.floor(p.millis() / 100) % 2 === 0 ? 1 : -1;
+          console.log(p.millis(), alt);
+          p.beginShape();
+          vertex(head.pos.add(head.getDir().rotate(3 * alt).mult(head.radius)));
+          vertex(head.pos.add(head.getDir().rotate(-3 * alt).mult(head.radius + 1.5)));
+          vertex(head.pos.add(head.getDir().rotate(3 * alt).mult(head.radius + 3)));
+          vertex(head.pos.add(head.getDir().rotate(-3 * alt).mult(head.radius + 4.5)));
+          vertex(head.pos.add(head.getDir().rotate(3 * alt).mult(head.radius + 3)));
+          vertex(head.pos.add(head.getDir().rotate(3 * alt).mult(head.radius + 4.5)));
+          p.endShape();
+        }
+      }
     }
 
     p.stroke("#00f");
