@@ -64,6 +64,11 @@ export class Vector {
   invert() {
     return new Vector(-this.x, -this.y);
   }
+
+  // get the dot product
+  dot(v: Vector) {
+    return this.x * v.x + this.y * v.y;
+  }
 }
 
 export const clamp = (n: number, min: number, max: number) => Math.min(Math.max(n, min), max);

@@ -48,10 +48,10 @@ const sketch = (p: p5) => {
     }
     snake.draw(p);
 
-    // draw the apples
+    // update and draw the apples
     for (const apple of apples) {
       if (!ended) {
-        apple.update(p, dt);
+        apple.update(p, dt, snake.segments);
       }
       apple.draw(p, color);
     }

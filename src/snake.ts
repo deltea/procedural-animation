@@ -7,7 +7,7 @@ import { Wave } from "./wave";
 const SEGMENT_DISTANCE = 3;
 const SEGMENT_MIN_ANGLE = 130;
 
-class Segment extends Point {
+export class Segment extends Point {
   radius: number;
 
   constructor(distance: number, pos: Vector, next: Point | null, radius: number) {
@@ -21,6 +21,11 @@ class Segment extends Point {
     } else {
       return new Vector(0, 0);
     }
+  }
+
+  checkPointCollision(pos: Vector) {
+    const dist = this.pos.sub(pos).magnitude();
+    return dist < this.radius;
   }
 }
 

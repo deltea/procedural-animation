@@ -1,6 +1,7 @@
 import { Point } from "./point";
 import p5 from "p5";
 import { Vector } from "./utils";
+import { Segment } from "./snake";
 
 const POINTS_DISTANCE = 5;
 const FIRMNESS = 1.5;
@@ -53,7 +54,7 @@ export class Apple {
     return arr;
   }
 
-  update(p: p5, dt: number) {
+  update(p: p5, dt: number, snakeSegments: Segment[]) {
     for (const point of this.points) {
       if (point.isRoot) continue;
       point.verletIntegrate();
@@ -92,39 +93,49 @@ export class Apple {
       for (const point of this.points) {
         point.applyDisplacement();
       }
-    }
-
-    for (const point of this.points) {
-      const vel = point.pos.sub(point.lastPos);
-      const normal = vel.normalize().mult(this.speed);
-      point.lastPos = point.pos.sub(normal);
-    }
-
-    // collision detection and bounccyyy
-    const restitution = 0;
-    for (const point of this.points) {
-      const vel = point.pos.sub(point.lastPos);
-
-      if (point.pos.x >= 80) {
-        point.pos.x = 160 - point.pos.x;
-        point.lastPos.x = point.pos.x - vel.x * restitution;
-      } else if (point.pos.x <= -80) {
-        point.pos.x = -160 - point.pos.x;
-        point.lastPos.x = point.pos.x - vel.x * restitution;
+      for (const point of this.points) {
+        const vel = point.pos.sub(point.lastPos);
+        const normal = vel.normalize().mult(this.speed);
+        point.lastPos = point.pos.sub(normal);
       }
 
-      if (point.pos.y >= 80) {
-        point.pos.y = 160 - point.pos.y;
-        point.lastPos.y = point.pos.y - vel.y * restitution;
-      } else if (point.pos.y <= -80) {
-        point.pos.y = -160 - point.pos.y;
-        point.lastPos.y = point.pos.y - vel.y * restitution;
-      }
+      // collision detection and bounccyyy
+      for (const point of this.points) {
+        const vel = point.pos.sub(point.lastPos);
 
-      if (point.pos) {
+        if (point.pos.x >= 80) {
+          point.pos.x = 160 - point.pos.x;
+          point.lastPos.x = point.pos.x - vel.x;
+        } else if (point.pos.x <= -80) {
+          point.pos.x = -160 - point.pos.x;
+          point.lastPos.x = point.pos.x - vel.x;
+        }
 
+        if (point.pos.y >= 80) {
+          point.pos.y = 160 - point.pos.y;
+          point.lastPos.y = point.pos.y - vel.y;
+        } else if (point.pos.y <= -80) {
+          point.pos.y = -160 - point.pos.y;
+          point.lastPos.y = point.pos.y - vel.y;
+        }
+
+        for (const segment of snakeSegments) {
+          if (segment.checkPointCollision(point.pos)) {
+            // push the point out of the segment first
+            const dir = point.pos.sub(segment.pos).normalize();
+            // push point out a little bit too much to make sure its out
+            point.pos = segment.pos.add(dir.mult(segment.radius + 0.1));
+
+            // then apply velocity
+            const vel = point.pos.sub(point.lastPos);
+            const normal = dir;
+            const reflected = vel.sub(normal.mult(2 * vel.dot(normal)));
+            point.lastPos = point.pos.sub(reflected);
+          }
+        }
       }
     }
+
   }
 
   calculateArea() {
