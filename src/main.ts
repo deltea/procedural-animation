@@ -24,16 +24,18 @@ const sketch = (p: p5) => {
     // create the snake
     const shape = new Wave([
       [0, 4.5],
+      [0.02, 4.3],
       [0.1, 3],
+      [0.8, 2],
       [1, 0.5]
     ]);
-    snake = new Snake(120, shape, 25);
+    snake = new Snake(400, shape, 25);
 
     // create a few apples
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 40; i++) {
       const size = rand(2, 8);
       const pos = new Vector(rand(-WIDTH / 2, WIDTH / 2), rand(-HEIGHT / 2, HEIGHT / 2));
-      apples.push(new Apple(pos, size, (10 - size) / 10, Math.floor(size * 2 + 5)));
+      apples.push(new Apple(pos, size, (10 - size) / 20, Math.floor(size * 2 + 5)));
     }
   }
 

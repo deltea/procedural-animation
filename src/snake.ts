@@ -126,11 +126,11 @@ export class Snake {
     // add extra points for head
     const head = this.getHead();
     if (head.next) {
-      points.push(head.pos.add(head.getDir().rotate(-45).mult(head.radius)));
-      points.push(head.pos.add(head.getDir().rotate(-22).mult(head.radius)));
-      points.push(head.pos.add(head.getDir().mult(head.radius)));
-      points.push(head.pos.add(head.getDir().rotate(22).mult(head.radius)));
-      points.push(head.pos.add(head.getDir().rotate(45).mult(head.radius)));
+      const num = 5;
+      const range = 180;
+      for (let i = -num; i < num; i++) {
+        points.push(head.pos.add(head.getDir().rotate(i * (range / (num * 2))).mult(head.radius)));
+      }
     }
 
     for (let i = 0; i < this.segments.length - 1; i++) {
@@ -183,7 +183,7 @@ export class Snake {
       }
     }
 
-    p.stroke("#00f");
+    // p.stroke("#00f");
 
     // for (const point of points) {
     //   p.circle(point.x, point.y, 1)

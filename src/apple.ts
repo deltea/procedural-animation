@@ -4,7 +4,7 @@ import { Vector } from "./utils";
 import { Segment } from "./snake";
 
 const POINTS_DISTANCE = 5;
-const FIRMNESS = 1.5;
+const FIRMNESS = 2.5;
 
 export class Apple {
   radius: number;
