@@ -61,11 +61,11 @@ export class Apple {
     }
 
     // normalize speed so each apple moves at a constant speed
-    for (const point of this.points) {
-      const vel = point.pos.sub(point.lastPos);
-      const normal = vel.normalize().mult(this.speed);
-      point.lastPos = point.pos.sub(normal);
-    }
+    // for (const point of this.points) {
+    //   const vel = point.pos.sub(point.lastPos);
+    //   const normal = vel.normalize().mult(this.speed);
+    //   point.lastPos = point.pos.sub(normal);
+    // }
 
     // repeat scaling a bunch of times per frame to make it adjust faster
     for (let i = 0; i < 10; i++) {
@@ -100,41 +100,55 @@ export class Apple {
       for (const point of this.points) {
         point.applyDisplacement();
       }
+    }
 
-      // collision detection and bounccyyy
+    // collision detection and bounccyyy
+    for (const point of this.points) {
+      const vel = point.pos.sub(point.lastPos);
+
+      if (point.pos.x >= 80) {
+        point.pos.x = 160 - point.pos.x;
+        point.lastPos.x = point.pos.x + vel.x;
+      } else if (point.pos.x <= -80) {
+        point.pos.x = -160 - point.pos.x;
+        point.lastPos.x = point.pos.x + vel.x;
+      }
+
+      if (point.pos.y >= 80) {
+        point.pos.y = 160 - point.pos.y;
+        point.lastPos.y = point.pos.y + vel.y;
+      } else if (point.pos.y <= -80) {
+        point.pos.y = -160 - point.pos.y;
+        point.lastPos.y = point.pos.y + vel.y;
+      }
+
+      for (const segment of snakeSegments) {
+        if (segment.checkPointCollision(point.pos)) {
+          // push the point out of the segment first
+          const dir = point.pos.sub(segment.pos).normalize();
+          // push point out a little bit too much to make sure its out
+          point.pos = segment.pos.add(dir.mult(segment.radius + 0.2));
+
+          // then apply velocity
+          const vel = point.pos.sub(point.lastPos);
+          const normal = dir;
+          const reflected = vel.sub(normal.mult(2 * vel.dot(normal)));
+          point.lastPos = point.pos.sub(reflected);
+        }
+      }
+    }
+
+    let centerVel = new Vector(0, 0);
+    for (const point of this.points) {
+      centerVel = centerVel.add(point.pos.sub(point.lastPos));
+    }
+    centerVel = centerVel.mult(1 / this.points.length);
+
+    if (centerVel.magnitude() > 0) {
+      const scale = this.speed / centerVel.magnitude();
       for (const point of this.points) {
         const vel = point.pos.sub(point.lastPos);
-
-        if (point.pos.x >= 80) {
-          point.pos.x = 160 - point.pos.x;
-          point.lastPos.x = point.pos.x + vel.x;
-        } else if (point.pos.x <= -80) {
-          point.pos.x = -160 - point.pos.x;
-          point.lastPos.x = point.pos.x + vel.x;
-        }
-
-        if (point.pos.y >= 80) {
-          point.pos.y = 160 - point.pos.y;
-          point.lastPos.y = point.pos.y + vel.y;
-        } else if (point.pos.y <= -80) {
-          point.pos.y = -160 - point.pos.y;
-          point.lastPos.y = point.pos.y + vel.y;
-        }
-
-        for (const segment of snakeSegments) {
-          if (segment.checkPointCollision(point.pos)) {
-            // push the point out of the segment first
-            const dir = point.pos.sub(segment.pos).normalize();
-            // push point out a little bit too much to make sure its out
-            point.pos = segment.pos.add(dir.mult(segment.radius + 0.2));
-
-            // then apply velocity
-            const vel = point.pos.sub(point.lastPos);
-            const normal = dir;
-            const reflected = vel.sub(normal.mult(2 * vel.dot(normal)));
-            point.lastPos = point.pos.sub(reflected);
-          }
-        }
+        point.lastPos = point.pos.sub(vel.mult(scale));
       }
     }
   }
