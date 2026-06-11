@@ -176,6 +176,6 @@ export class Apple {
       // p.circle(point.pos.x, point.pos.y, 2);
       p.vertex(point.pos.x, point.pos.y);
     }
-    p.endShape(p.CLOSE);
+    p.endShape("close");
   }
 }

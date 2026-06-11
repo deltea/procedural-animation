@@ -19,6 +19,7 @@ const sketch = (p: p5) => {
   p.setup = () => {
     p.createCanvas(WIDTH, HEIGHT, p.WEBGL);
     document.documentElement.style.setProperty("--scale-factor", `${SCALE * 100}%`);
+    p.angleMode("degrees");
 
     // create the snake
     const shape = new Wave([

@@ -146,7 +146,7 @@ export class Snake {
       p.vertex(point.x, point.y);
     }
 
-    p.endShape(p.CLOSE);
+    p.endShape("close");
 
     // draw the eyes
     if (head.next) {
