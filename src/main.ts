@@ -66,6 +66,7 @@ const sketch = (p: p5) => {
       if (snake.getHead().checkPointCollision(food[i].pos)) {
         food.splice(i, 1);
         score++;
+        snake.addSegment();
         if (food.length === 0) spawnFood(p);
       }
     }

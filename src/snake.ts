@@ -45,27 +45,28 @@ export class Snake {
   constructor(length: number, shape: Wave, speed: number) {
     this.length = length;
     this.shape = shape;
-    this.segments = this.generateSegments();
+    this.segments = [];
     this.speed = speed;
+
+    this.generateSegments()
   }
 
   generateSegments() {
-    const arr: Segment[] = [];
-
     // generate points based on shape and length of snake
     for (let i = 0; i < this.length; i++) {
       // generate a point based on the shape
-      const s = new Segment(SEGMENT_DISTANCE, new Vector(i * SEGMENT_DISTANCE, 0), null, this.shape.getPos(i / this.length));
-      arr.push(s);
+      const s = new Segment(SEGMENT_DISTANCE, new Vector(i * SEGMENT_DISTANCE, 0), null, 0);
+      this.segments.push(s);
     }
+
+    // calculate the radius for each segment
+    this.calculateSegments();
 
     // set point connections
     for (let i = 0; i < this.length - 1; i++) {
-      const next = arr[i + 1];
-      arr[i].next = next;
+      const next = this.segments[i + 1];
+      this.segments[i].next = next;
     }
-
-    return arr;
   }
 
   getHead() {
@@ -188,5 +189,19 @@ export class Snake {
     // for (const point of points) {
     //   p.circle(point.x, point.y, 1)
     // }
+  }
+
+  calculateSegments() {
+    for (let i = 0; i < this.segments.length; i++) {
+      this.segments[i].radius = this.shape.getPos(i / this.length);
+    }
+  }
+
+  addSegment() {
+    this.length += 1;
+    const s = new Segment(SEGMENT_DISTANCE, this.getTail().pos, null, 0);
+    s.next = this.getTail();
+    this.segments.push(s);
+    this.calculateSegments();
   }
 }
