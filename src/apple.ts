@@ -167,6 +167,14 @@ export class Apple {
     return a;
   }
 
+  calculatePos() {
+    let vec = new Vector(0, 0);
+    for (const point of this.points) {
+      vec = vec.add(point.pos);
+    }
+    return vec.div(this.points.length);
+  }
+
   draw(p: p5, color: string) {
     p.strokeWeight(1);
     p.stroke(color);

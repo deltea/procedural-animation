@@ -18,8 +18,12 @@ let color = "#f00";
 let ended = false;
 let score = 0;
 
+let font: p5.Font;
+
 const sketch = (p: p5) => {
-  p.setup = () => {
+  p.setup = async () => {
+    font = await p.loadFont("/visitor/visitor2.ttf");
+
     p.createCanvas(WIDTH, HEIGHT, p.WEBGL);
     document.documentElement.style.setProperty("--scale-factor", `${SCALE * 100}%`);
     p.angleMode("degrees");
@@ -35,7 +39,7 @@ const sketch = (p: p5) => {
     snake = new Snake(400, shape, 25);
 
     // create a few apples
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 20; i++) {
       const size = rand(2, 8);
       const pos = new Vector(rand(-WIDTH / 2, WIDTH / 2), rand(-HEIGHT / 2, HEIGHT / 2));
       apples.push(new Apple(pos, size, (10 - size) / 20, Math.floor(size * 2 + 5)));
@@ -87,6 +91,14 @@ const sketch = (p: p5) => {
     const right = mousePos.add(new Vector(0, -2).rotate(angle + 45));
     p.line(mousePos.x, mousePos.y, left.x, left.y);
     p.line(mousePos.x, mousePos.y, right.x, right.y);
+
+    // draw the score
+    p.stroke(0, 0);
+    p.fill(255);
+    p.textSize(13);
+    p.textFont(font);
+    p.textAlign(p.LEFT, p.TOP);
+    p.text(score, -WIDTH / 2 + 3, -HEIGHT / 2 - 2);
   }
 }
 
