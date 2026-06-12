@@ -5,6 +5,7 @@ import { Snake } from "./snake";
 import { Wave } from "./wave";
 import { rand, Vector } from "./utils";
 import { Apple } from "./apple";
+import { Food } from "./food";
 
 const SCALE = 6;
 const WIDTH = 640 / 4;
@@ -12,8 +13,10 @@ const HEIGHT = 640 / 4;
 
 let snake: Snake;
 let apples: Apple[] = [];
+let food: Food[] = [];
 let color = "#f00";
 let ended = false;
+let score = 0;
 
 const sketch = (p: p5) => {
   p.setup = () => {
@@ -37,6 +40,8 @@ const sketch = (p: p5) => {
       const pos = new Vector(rand(-WIDTH / 2, WIDTH / 2), rand(-HEIGHT / 2, HEIGHT / 2));
       apples.push(new Apple(pos, size, (10 - size) / 20, Math.floor(size * 2 + 5)));
     }
+
+    spawnFood(p);
   }
 
   p.draw = () => {
@@ -52,12 +57,26 @@ const sketch = (p: p5) => {
     }
     snake.draw(p);
 
+    // check for food collisions
+    for (let i = 0; i < food.length; i++) {
+      if (snake.getHead().checkPointCollision(food[i].pos)) {
+        food.splice(i, 1);
+        score++;
+        if (food.length === 0) spawnFood(p);
+      }
+    }
+
     // update and draw the apples
     for (const apple of apples) {
       if (!ended) {
         apple.update(p, dt, snake.segments, apples);
       }
       apple.draw(p, color);
+    }
+
+    // draw food
+    for (const f of food) {
+      f.draw(p);
     }
 
     // draw the cursor
@@ -68,6 +87,13 @@ const sketch = (p: p5) => {
     const right = mousePos.add(new Vector(0, -2).rotate(angle + 45));
     p.line(mousePos.x, mousePos.y, left.x, left.y);
     p.line(mousePos.x, mousePos.y, right.x, right.y);
+  }
+}
+
+const spawnFood = (p: p5) => {
+  for (let i = 0; i < Math.floor(rand(2, 5)); i++) {
+    const pos = new Vector(rand(-WIDTH / 2, WIDTH / 2), rand(-HEIGHT / 2, HEIGHT / 2));
+    food.push(new Food(pos, p.millis()));
   }
 }
 
