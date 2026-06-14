@@ -1,11 +1,11 @@
 import p5 from "p5";
 
 import { Point } from "./point";
-import { radToDeg, Vector } from "./utils";
+import { Vector } from "./utils";
 import { Wave } from "./wave";
 
 const SEGMENT_DISTANCE = 0.5;
-const SEGMENT_MIN_ANGLE = 120;
+// const SEGMENT_MIN_ANGLE = 120;
 const FOLLOW_MIN_DIST = 10;
 
 // how often the tongue flicks in seconds

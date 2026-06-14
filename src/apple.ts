@@ -54,7 +54,7 @@ export class Apple {
     return arr;
   }
 
-  update(p: p5, dt: number, snakeSegments: Segment[], apples: Apple[]) {
+  update(snakeSegments: Segment[]) {
     for (const point of this.points) {
       if (point.isRoot) continue;
       point.verletIntegrate();
