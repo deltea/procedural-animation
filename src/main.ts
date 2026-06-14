@@ -53,7 +53,7 @@ const sketch = (p: p5) => {
     p.background(0);
     p.fill(0, 0);
 
-    color = `hsl(${Math.floor(p.millis() / 100) % 360}, 100, 60)`;
+    color = `hsl(${Math.floor(p.millis() / 50) % 360}, 100, 60)`;
 
     const dt = p.deltaTime / 1000;
     const mousePos = new Vector(p.mouseX / SCALE - WIDTH / 2, p.mouseY / SCALE - HEIGHT / 2);
