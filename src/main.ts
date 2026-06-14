@@ -22,11 +22,12 @@ let font: p5.Font;
 
 const sketch = (p: p5) => {
   p.setup = async () => {
-    font = await p.loadFont("/visitor/visitor2.ttf");
+    font = await p.loadFont("/goodbyeDespair.ttf");
 
     p.createCanvas(WIDTH, HEIGHT, p.WEBGL);
     document.documentElement.style.setProperty("--scale-factor", `${SCALE * 100}%`);
     p.angleMode("degrees");
+    p.noSmooth();
 
     // create the snake
     const shape = new Wave([
@@ -50,7 +51,6 @@ const sketch = (p: p5) => {
 
   p.draw = () => {
     p.background(0);
-    p.noSmooth();
     p.fill(0, 0);
 
     const dt = p.deltaTime / 1000;
@@ -96,10 +96,10 @@ const sketch = (p: p5) => {
     // draw the score
     p.stroke(0, 0);
     p.fill(255);
-    p.textSize(13);
+    p.textSize(8);
     p.textFont(font);
     p.textAlign(p.LEFT, p.TOP);
-    p.text(score, -WIDTH / 2 + 3, -HEIGHT / 2 - 2);
+    p.text(score, -WIDTH / 2 + 3, -HEIGHT / 2 + 2);
   }
 }
 
