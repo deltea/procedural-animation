@@ -53,6 +53,8 @@ const sketch = (p: p5) => {
     p.background(0);
     p.fill(0, 0);
 
+    color = `hsl(${Math.floor(p.millis() / 100) % 360}, 100, 60)`;
+
     const dt = p.deltaTime / 1000;
     const mousePos = new Vector(p.mouseX / SCALE - WIDTH / 2, p.mouseY / SCALE - HEIGHT / 2);
 
@@ -60,16 +62,6 @@ const sketch = (p: p5) => {
       snake.update(dt, mousePos);
     }
     snake.draw(p);
-
-    // check for food collisions
-    for (let i = 0; i < food.length; i++) {
-      if (snake.getHead().checkPointCollision(food[i].pos)) {
-        food.splice(i, 1);
-        score++;
-        // snake.addSegment();
-        if (food.length === 0) spawnFood(p);
-      }
-    }
 
     // update and draw the apples
     for (const apple of apples) {
@@ -79,8 +71,18 @@ const sketch = (p: p5) => {
       apple.draw(p, color);
     }
 
-    // draw food
+    // food updating
     for (const f of food) {
+      // check for food collisions
+      for (let i = 0; i < food.length; i++) {
+        if (snake.getHead().checkPointCollision(food[i].pos)) {
+          food.splice(i, 1);
+          score++;
+          // snake.addSegment();
+          if (food.length === 0) spawnFood(p);
+        }
+      }
+
       f.draw(p);
     }
 
